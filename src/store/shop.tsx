@@ -60,6 +60,17 @@ const ShopContext = createContext<ShopValue | null>(null);
 
 export const ADMIN_CREDENTIALS = { username: "admin", password: "radhika123" };
 
+const STORAGE_KEY = "radhika-collection-session";
+
+type Persisted = {
+  products: Product[];
+  orders: Order[];
+  customers: Customer[];
+  cart: CartLine[];
+  wishlist: string[];
+  isAdmin: boolean;
+};
+
 export function ShopProvider({ children }: { children: ReactNode }) {
   const [products, setProducts] = useState<Product[]>(seedProducts);
   const [orders, setOrders] = useState<Order[]>(seedOrders);
@@ -68,6 +79,40 @@ export function ShopProvider({ children }: { children: ReactNode }) {
   const [wishlist, setWishlist] = useState<string[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const [hydrated, setHydrated] = useState(false);
+
+  // Restore the in-memory session after hydration so a refresh keeps the
+  // shopper's bag, wishlist and any admin edits for this browser session.
+  useEffect(() => {
+    try {
+      const raw = window.sessionStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const saved = JSON.parse(raw) as Partial<Persisted>;
+        if (Array.isArray(saved.products) && saved.products.length > 0) setProducts(saved.products);
+        if (Array.isArray(saved.orders)) setOrders(saved.orders);
+        if (Array.isArray(saved.customers)) setCustomers(saved.customers);
+        if (Array.isArray(saved.cart)) setCart(saved.cart);
+        if (Array.isArray(saved.wishlist)) setWishlist(saved.wishlist);
+        if (typeof saved.isAdmin === "boolean") setIsAdmin(saved.isAdmin);
+      }
+    } catch {
+      /* ignore malformed session data */
+    }
+    setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    try {
+      window.sessionStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({ products, orders, customers, cart, wishlist, isAdmin }),
+      );
+    } catch {
+      /* storage unavailable — state stays in memory only */
+    }
+  }, [hydrated, products, orders, customers, cart, wishlist, isAdmin]);
+
 
   const notify = useCallback((message: string) => {
     const id = Date.now() + Math.random();
