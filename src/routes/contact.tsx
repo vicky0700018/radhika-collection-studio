@@ -28,14 +28,14 @@ function ContactPage() {
   const { notify } = useShop();
   const [sent, setSent] = useState(false);
   const [form, setForm] = useState({ name: "", phone: "", message: "" });
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<{ name?: string; phone?: string; message?: string }>({});
 
   const inputCls =
     "mt-1 w-full rounded-md border border-border bg-card px-3 py-2.5 text-sm outline-none focus:border-primary";
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
-    const next: Record<string, string> = {};
+    const next: { name?: string; phone?: string; message?: string } = {};
     if (form.name.trim().length < 3) next.name = "Please enter your name.";
     if (!/^[6-9]\d{9}$/.test(form.phone.replace(/\s/g, "")))
       next.phone = "Enter a valid 10-digit mobile number.";

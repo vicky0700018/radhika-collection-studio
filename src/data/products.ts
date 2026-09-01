@@ -36,7 +36,7 @@ export type Product = {
   rating: number;
   reviews: number;
   featured: boolean;
-  tag?: "New" | "Bestseller" | "Limited";
+  tag?: "New" | "Bestseller" | "Limited" | undefined;
 };
 
 export const categories = [

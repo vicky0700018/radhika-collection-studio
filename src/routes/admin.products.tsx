@@ -27,6 +27,14 @@ export const Route = createFileRoute("/admin/products")({
 
 const imageKeys = Object.keys(productImages) as ImageKey[];
 
+type ProductErrors = {
+  name?: string;
+  price?: string;
+  mrp?: string;
+  stock?: string;
+  description?: string;
+};
+
 const emptyDraft = (): Product => ({
   id: "",
   name: "",
@@ -52,7 +60,7 @@ function AdminProductsPage() {
   const [draft, setDraft] = useState<Product | null>(null);
   const [isNew, setIsNew] = useState(false);
   const [confirmId, setConfirmId] = useState<string | null>(null);
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<ProductErrors>({});
 
   const list = useMemo(() => {
     const t = query.trim().toLowerCase();
@@ -74,7 +82,7 @@ function AdminProductsPage() {
   function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!draft) return;
-    const next: Record<string, string> = {};
+    const next: ProductErrors = {};
     if (draft.name.trim().length < 4) next.name = "Product name is too short.";
     if (draft.price <= 0) next.price = "Price must be greater than zero.";
     if (draft.mrp < draft.price) next.mrp = "MRP cannot be lower than the selling price.";

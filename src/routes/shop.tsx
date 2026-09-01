@@ -11,9 +11,9 @@ type ShopSearch = { q?: string; category?: string; sort?: string };
 
 export const Route = createFileRoute("/shop")({
   validateSearch: (search: Record<string, unknown>): ShopSearch => ({
-    q: typeof search.q === "string" ? search.q : "",
-    category: typeof search.category === "string" ? search.category : "All",
-    sort: typeof search.sort === "string" ? search.sort : "featured",
+    q: typeof search["q"] === "string" ? (search["q"] as string) : "",
+    category: typeof search["category"] === "string" ? (search["category"] as string) : "All",
+    sort: typeof search["sort"] === "string" ? (search["sort"] as string) : "featured",
   }),
   head: () => ({
     meta: [
@@ -67,7 +67,7 @@ function ShopPage() {
 
   const results = useMemo(() => {
     const term = q.trim().toLowerCase();
-    const priceBand = priceBands.find((b) => b.value === band) ?? priceBands[0];
+    const priceBand = priceBands.find((b) => b.value === band) ?? { value: "all", label: "All prices", min: 0, max: Infinity };
     let list = products.filter((p) => {
       if (category !== "All" && p.category !== category) return false;
       if (p.price < priceBand.min || p.price > priceBand.max) return false;

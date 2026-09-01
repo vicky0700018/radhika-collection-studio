@@ -7,7 +7,7 @@ import { CheckIcon } from "@/components/Icons";
 
 export const Route = createFileRoute("/order-success")({
   validateSearch: (search: Record<string, unknown>) => ({
-    orderId: typeof search.orderId === "string" ? search.orderId : "",
+    orderId: typeof search["orderId"] === "string" ? (search["orderId"] as string) : "",
   }),
   head: () => ({
     meta: [

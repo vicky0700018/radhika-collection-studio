@@ -64,7 +64,7 @@ function ProductPage() {
 
   function requireSize(): string | null {
     if (!product) return null;
-    if (product.sizes.length === 1) return product.sizes[0];
+    if (product.sizes.length === 1) return product.sizes[0] ?? "Free Size";
     if (!size) {
       setError("Please select a size first.");
       return null;
